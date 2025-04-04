@@ -9,6 +9,7 @@ const User = require("./models/userModel");
 const userRoutes = require("./routes/userRouter");
 const GlobalErrorHandler = require("./controllers/errorController");
 const chatbotRoutes = require("./routes/chatBotRouter");
+const quizRoutes = require("./routes/quizRouter");
 const AppError = require("./utils/AppError");
 
 const app = express();
@@ -80,6 +81,7 @@ passport.use(
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/chatbot", chatbotRoutes);
+app.use("/quiz", quizRoutes);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
