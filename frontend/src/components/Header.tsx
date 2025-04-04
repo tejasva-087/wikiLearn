@@ -6,10 +6,10 @@ import { Button } from './ui/button';
 function Header() {
   return (
     <header className="border-b border-gray-200 bg-white shadow-sm flex flex-row items-start p-0 w-full">
-      <div className="flex flex-1 flex-row items-start max-w-7xl mx-auto w-full self-stretch">
+      <div className="flex flex-1 flex-row items-start w-full self-stretch px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 sm:h-18 items-center justify-between w-full">
           {/* Logo and title */}
-          <div className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-3">
+          <div className="flex items-center gap-1 sm:gap-2 py-3">
             {/* <img
               alt="Logo"
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-full"
@@ -23,7 +23,7 @@ function Header() {
           </div>
 
           {/* Navigation - responsive for all screen sizes */}
-          <div className="flex items-center gap-2 sm:gap-3 px-4 py-3">
+          <div className="flex items-center gap-2 sm:gap-3 py-3">
             <Button
               variant="ghost"
               size="icon"
