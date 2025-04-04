@@ -14,23 +14,13 @@ function AnimatedRoutes() {
 	return (
 		<AnimatePresence mode="wait">
 			<Routes location={location} key={location.pathname}>
-				{/* Public routes */}
 				<Route path="/signup" element={<SignUpPage />} />
 				<Route path="/login" element={<LoginPage />} />
 				<Route path="/forgot-password" element={<ForgotPasswordPage />} />
 				<Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-				{/* Protected routes */}
 				<Route
-					path="/"
-					element={
-						<ProtectedRoute>
-							<Layout />
-						</ProtectedRoute>
-					}
-				/>
-				<Route
-					path="/dashboard"
+					path="/*"
 					element={
 						<ProtectedRoute>
 							<Layout />
