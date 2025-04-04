@@ -1,10 +1,18 @@
+import { NavLink } from "react-router-dom";
+
 function Sidebar() {
   return (
     <div className="w-1/6 bg-white p-4 shadow-md">
       <nav className="space-y-4">
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="/"
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            `flex items-center text-xl space-x-3 text-gray-700 p-3 rounded-xl transition ${
+              isActive
+                ? "bg-gray-200 text-blue-500"
+                : "hover:text-blue-500 hover:bg-gray-200"
+            }`
+          }
         >
           <svg
             width="28"
@@ -18,12 +26,17 @@ function Sidebar() {
               fill="#27272A"
             />
           </svg>
-
           <span>Overview</span>
-        </a>
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="/courses"
+        </NavLink>
+        <NavLink
+          to="/courses"
+          className={({ isActive }) =>
+            `flex items-center text-xl space-x-3 text-gray-700 p-3 rounded-xl transition ${
+              isActive
+                ? "bg-gray-200 text-blue-500"
+                : "hover:text-blue-500 hover:bg-gray-200"
+            }`
+          }
         >
           <svg
             width="28"
@@ -37,12 +50,17 @@ function Sidebar() {
               fill="#52525C"
             />
           </svg>
-
           <span>Courses</span>
-        </a>
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="/badges"
+        </NavLink>
+        <NavLink
+          to="/badges"
+          className={({ isActive }) =>
+            `flex items-center text-xl space-x-3 text-gray-700 p-3 rounded-xl transition ${
+              isActive
+                ? "bg-gray-200 text-blue-500"
+                : "hover:text-blue-500 hover:bg-gray-200"
+            }`
+          }
         >
           <svg
             width="28"
@@ -56,12 +74,17 @@ function Sidebar() {
               fill="#52525C"
             />
           </svg>
-
           <span>Badges</span>
-        </a>
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="/certificates"
+        </NavLink>
+        <NavLink
+          to="/certificates"
+          className={({ isActive }) =>
+            `flex items-center text-xl space-x-3 text-gray-700 p-3 rounded-xl transition ${
+              isActive
+                ? "bg-gray-200 text-blue-500"
+                : "hover:text-blue-500 hover:bg-gray-200"
+            }`
+          }
         >
           <svg
             width="28"
@@ -75,12 +98,17 @@ function Sidebar() {
               fill="#52525C"
             />
           </svg>
-
           <span>Certificates</span>
-        </a>
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="/forum"
+        </NavLink>
+        <NavLink
+          to="/forum"
+          className={({ isActive }) =>
+            `flex items-center text-xl space-x-3 text-gray-700 p-3 rounded-xl transition ${
+              isActive
+                ? "bg-gray-200 text-blue-500"
+                : "hover:text-blue-500 hover:bg-gray-200"
+            }`
+          }
         >
           <svg
             width="28"
@@ -94,9 +122,8 @@ function Sidebar() {
               fill="#52525C"
             />
           </svg>
-
           <span>Forum</span>
-        </a>
+        </NavLink>
       </nav>
     </div>
   );

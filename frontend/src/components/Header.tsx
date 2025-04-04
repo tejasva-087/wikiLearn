@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 function Header() {
   return (
-    <header className="border-b border-gray-200 bg-white shadow-sm flex flex-row items-start p-0 w-full">
+    <header className="border-b border-gray-200 bg-white flex flex-row items-start p-0 w-full">
       <div className="flex flex-1 flex-row items-start w-full self-stretch px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 sm:h-18 items-center justify-between w-full">
           {/* Logo and title */}

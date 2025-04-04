@@ -33,9 +33,9 @@ function HomePage() {
           {/* Bages */}
           <div className="mt-8">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Badges</h3>
+              <h3 className="text-xl font-semibold">Explore Courses</h3>
               <a className="text-blue-600 font-semibold" href="#">
-                See all badges
+                See all courses
                 <i className="fas fa-arrow-right ml-1"></i>
               </a>
             </div>
