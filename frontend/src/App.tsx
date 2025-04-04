@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import {
+	BrowserRouter,
+	Routes,
+	Route,
+	useLocation,
+	Navigate,
+} from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import SignUpPage from "./features/auth/components/sign-up-page";
 import LoginPage from "./features/auth/components/sign-in-page";
@@ -27,6 +33,7 @@ function AnimatedRoutes() {
 						</ProtectedRoute>
 					}
 				/>
+				<Route path="/dashboard" element={<Navigate to="/" replace />} />
 			</Routes>
 		</AnimatePresence>
 	);

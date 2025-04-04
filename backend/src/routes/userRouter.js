@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Fix the routes to use the correct exported functions
 router.post('/signup', authController.signup);
-router.post('/login', authController.signin); // Changed from login to signin to match the controller
+router.post('/login', authController.signin || authController.login);
 
 // Check if these functions exist in authController
 // If forgotPassword and resetPassword are exported directly, use them
