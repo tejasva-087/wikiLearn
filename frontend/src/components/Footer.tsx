@@ -9,8 +9,8 @@ function Footer() {
                 className="text-white transition hover:text-gray-700/75"
                 href="#"
               >
-                {" "}
-                Overview{" "}
+                {' '}
+                Overview{' '}
               </a>
             </li>
 
@@ -19,8 +19,8 @@ function Footer() {
                 className="text-white transition hover:text-gray-700/75"
                 href="#"
               >
-                {" "}
-                Courses{" "}
+                {' '}
+                Courses{' '}
               </a>
             </li>
 
@@ -29,8 +29,8 @@ function Footer() {
                 className="text-white transition hover:text-gray-700/75"
                 href="#"
               >
-                {" "}
-                Badges{" "}
+                {' '}
+                Badges{' '}
               </a>
             </li>
 
@@ -39,8 +39,8 @@ function Footer() {
                 className="text-white transition hover:text-gray-700/75"
                 href="#"
               >
-                {" "}
-                Certification{" "}
+                {' '}
+                Certification{' '}
               </a>
             </li>
 
@@ -49,8 +49,8 @@ function Footer() {
                 className="text-white transition hover:text-gray-700/75"
                 href="#"
               >
-                {" "}
-                Forum{" "}
+                {' '}
+                Forum{' '}
               </a>
             </li>
 
@@ -59,8 +59,8 @@ function Footer() {
                 className="text-white transition hover:text-gray-700/75"
                 href="#"
               >
-                {" "}
-                Contact Us{" "}
+                {' '}
+                Contact Us{' '}
               </a>
             </li>
           </ul>

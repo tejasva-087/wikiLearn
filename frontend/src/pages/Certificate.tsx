@@ -1,10 +1,5 @@
-
 function Certificate() {
-  return (
-    <div>
-      Certificate
-    </div>
-  )
+  return <div>Certificate</div>;
 }
 
-export default Certificate
+export default Certificate;

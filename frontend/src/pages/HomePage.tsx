@@ -1,5 +1,5 @@
-import Achievements from "../components/Achievements";
-import Sidebar from "../components/Sidebar";
+import Achievements from '../components/Achievements';
+import Sidebar from '../components/Sidebar';
 
 function HomePage() {
   return (

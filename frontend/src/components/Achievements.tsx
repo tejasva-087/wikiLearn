@@ -2,10 +2,7 @@ function Achievements() {
   return (
     <div className="w-1/6 bg-white p-4 shadow-md">
       <nav className="space-y-4">
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="#"
-        >
+        <a className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition">
           <svg
             width="37"
             height="37"
@@ -26,10 +23,7 @@ function Achievements() {
           </svg>
           <span>6 days streak</span>
         </a>
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="#"
-        >
+        <a className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition">
           <svg
             width="37"
             height="37"
@@ -52,10 +46,7 @@ function Achievements() {
 
           <span>30 points</span>
         </a>
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="#"
-        >
+        <a className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition">
           <svg
             width="40"
             height="41"
@@ -72,10 +63,7 @@ function Achievements() {
 
           <span>12 badges</span>
         </a>
-        <a
-          className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition"
-          href="#"
-        >
+        <a className="flex items-center text-xl space-x-3 text-gray-700 hover:text-blue-500 hover:bg-gray-200 p-3 rounded-xl transition">
           <svg
             width="35"
             height="35"
@@ -104,5 +92,3 @@ function Achievements() {
 }
 
 export default Achievements;
-
-

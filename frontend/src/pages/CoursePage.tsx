@@ -1,9 +1,5 @@
 function CoursePage() {
-  return (
-    <div>
-      Course Page
-    </div>
-  )
+  return <div>Course Page</div>;
 }
 
-export default CoursePage
+export default CoursePage;

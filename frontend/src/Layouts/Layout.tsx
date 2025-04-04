@@ -1,6 +1,6 @@
-import Header from "../components/Header";
+import Header from '../components/Header';
 // import Footer from "../components/Footer";
-import HomePage from "../pages/HomePage";
+import HomePage from '../pages/HomePage';
 //import BadgePage from "../pages/BadgePage";
 //import Certificate from "../pages/Certificate";
 //import CoursePage from "../pages/CoursePage";
@@ -9,8 +9,8 @@ import HomePage from "../pages/HomePage";
 function Layout() {
   return (
     <div className="">
-      <Header></Header>
-      <HomePage></HomePage>
+      <Header />
+      <HomePage />
       {/* <BadgePage></BadgePage>
       <Certificate></Certificate>
       <CoursePage></CoursePage>

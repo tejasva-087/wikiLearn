@@ -1,9 +1,5 @@
 function ForumPage() {
-  return (
-    <div>
-      Forum Page
-    </div>
-  )
+  return <div>Forum Page</div>;
 }
 
-export default ForumPage
+export default ForumPage;

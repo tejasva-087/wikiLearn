@@ -1,9 +1,5 @@
 function BadgePage() {
-  return (
-    <div>
-      Badge Page
-    </div>
-  )
+  return <div>Badge Page</div>;
 }
 
-export default BadgePage
+export default BadgePage;
