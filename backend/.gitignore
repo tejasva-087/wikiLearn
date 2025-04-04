@@ -104,5 +104,3 @@ dist/
 *.sln
 *.sw?
 .DS_Store
-
-config.env
