@@ -1,47 +1,75 @@
-const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
-const helmet = require("helmet");
-const AppError = require("./utils/AppError");
-const GlobalErrorHandler = require("./controllers/errorController");
-
-const userRouter = require("./routes/userRouter");
-const chatBotRouter = require("./routes/chatBotRouter");
+const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const cors = require('cors');
+const config = require('./config/auth.config');
+const authRoutes = require('./routes/auth.routes');
+const User = require('./models/userModel');
 
 const app = express();
 
-// Security HTTP headers
-app.use(helmet());
-
-// CORS middleware
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:5173"
-        : process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
-
-// MORGAN MIDDLEWARE FOR DEVELOPMENT
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
-
-// REQUEST BODY PARSER
-app.use(express.json({ limit: "10kb" }));
-
-// API ROUTES
-app.use("/api/v1/users", userRouter);
-appluse("/api/v1/chatbot", chatBotRouter);
-
-// HANDLING UNHANDLED ROUTES
-app.all("*", (req, _res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+app.use(express.json());
+app.use(session(config.session));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser((user, done) => {
+  done(null, user.id);
 });
 
-// GLOBAL ERROR HANDLER
-app.use(GlobalErrorHandler);
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
+
+console.log('Google OAuth Config:', {
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+});
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: 'http://localhost:3000/auth/google/callback',
+      scope: ['profile', 'email'],
+    },
+    async (_accessToken, _refreshToken, profile, done) => {
+      try {
+        let user = await User.findOne({ githubId: profile.id });
+
+        if (!user) {
+          const email = profile.emails?.[0]?.value;
+          const [firstName, ...lastNames] = (profile.displayName || '').split(' ');
+
+          user = await User.create({
+            githubId: profile.id,
+            email: email || `${profile.username}@github.com`,
+            name: firstName || profile.username,
+            surname: lastNames.join(' '),
+            avatar: profile.photos[0].value,
+          });
+        }
+
+        return done(null, user);
+      } catch (error) {
+        return done(error);
+      }
+    }
+  )
+);
+
+app.use('/auth', authRoutes);
 
 module.exports = app;

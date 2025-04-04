@@ -1,88 +1,48 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const validator = require('validator');
-const bcrypt = require('bcrypt');
-const crypto = require('node:crypto');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'A user must have a name'],
-    minLength: [3, 'Name must be atleast 3 characters'],
-    maxLength: [20, 'Nmae must not be more then 20 characters'],
+    required: [true, 'Please tell us your name'],
   },
+  surname: String,
   email: {
     type: String,
+    required: [true, 'Please provide your email'],
     unique: true,
-    required: [true, 'A user must have an email'],
     lowercase: true,
-    validate: [validator.isEmail, 'Provide a valid email'],
+    validate: [validator.isEmail, 'Please provide a valid email'],
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
-    minLength: [8, 'The given email is not a valid email'],
     select: false,
   },
-  passwordConfirm: {
-    type: String,
-    required: [true, 'Please confirm your password'],
-    minLength: [8, 'The given email is not a valid email'],
-    validate: {
-      validator: function (confirmPassword) {
-        return this.password === confirmPassword;
-      },
-      message: 'Please enter the same passwords!',
-    },
+  googleId: String,
+  githubId: String,
+  avatar: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-  passwordResetToken: String,
-  passwordResetExpires: Date,
 });
 
-// Hashing the password before saving the password if the user is created or password is modified
+// Hash the password before saving
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+  // Only run this function if password was actually modified
+  if (!this.isModified('password') || !this.password) {
     return next();
   }
+
+  // Hash the password with cost of 12
   this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
   next();
 });
 
-// updating the password modified time stamp if user changes the password
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) {
-    return next();
-  }
-  this.passwordUpdatedAt = Date.now() - 1000;
-  next();
-});
-
-// INSTANCE METHODS
-
-// Compare the password with the hashed password
+// Method to check if password is correct
 userSchema.methods.correctPassword = async (candidatePassword, userPassword) =>
   await bcrypt.compare(candidatePassword, userPassword);
-
-// Check if the user has changed the password after the jwt token was issued
-userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
-  if (this.passwordUpdatedAt) {
-    const changedTimestamp = Number.parseInt(this.passwordUpdatedAt.getTime() / 1000, 10);
-    return JWTTimestamp < changedTimestamp;
-  }
-
-  return false;
-};
-
-// Create a password reset token
-userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString('hex');
-
-  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-
-  return resetToken;
-};
 
 const User = mongoose.model('User', userSchema);
 
