@@ -1,4 +1,4 @@
-import logo from "../assets/logo.svg";
+//import logo from "../assets/logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Bell, Sun } from "lucide-react";
@@ -10,13 +10,13 @@ function Header() {
         <div className="flex h-16 sm:h-18 items-center justify-between w-full">
           {/* Logo and title */}
           <div className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-3">
-            <img
+            {/* <img
               alt="Logo"
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-full"
               src={logo}
               width="36"
               height="36"
-            />
+            /> */}
             <span className="text-xl sm:text-2xl md:text-3xl font-bold whitespace-nowrap">
               <span className="text-blue-600">Wiki</span>Learn
             </span>
