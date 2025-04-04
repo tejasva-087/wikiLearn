@@ -1,6 +1,16 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const config = require('../config/auth.config');
+const oauthConfig = require('../config/oauth.config');
+
+console.log('Google OAuth Config:', {
+  clientID: oauthConfig.google.clientID,
+  clientSecret: oauthConfig.google.clientSecret ? '****' : undefined
+});
+
+if (!oauthConfig.google.clientID || !oauthConfig.google.clientSecret) {
+  console.warn('WARNING: Google OAuth credentials are not properly configured!');
+}
 
 exports.signup = async (req, res) => {
   try {
