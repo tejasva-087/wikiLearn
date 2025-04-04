@@ -4,9 +4,7 @@
   "description": "A boilerplate for a Node.js backend application using MCV architecture.",
   "main": "./src/server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "lint": "biome check --write .",
-    "format": "biome format --write ."
+    "start": "nodemon server.js"
   },
   "type": "commonjs",
   "dependencies": {

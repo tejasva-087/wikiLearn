@@ -1,7 +1,7 @@
-import logo from "../assets/logo.svg";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
-import { Bell, Sun } from "lucide-react";
+import { Bell, Sun } from 'lucide-react';
+import logo from '../assets/logo.svg';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Button } from './ui/button';
 
 function Header() {
   return (
