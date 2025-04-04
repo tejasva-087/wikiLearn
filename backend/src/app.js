@@ -6,15 +6,15 @@ const cors = require('cors');
 const config = require('./config/auth.config');
 const authRoutes = require('./routes/auth.routes');
 const User = require('./models/userModel');
+const userRoutes = require('./routes/userRouter');
 
 const app = express();
 
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(session(config.session));
 app.use(passport.initialize());
@@ -71,5 +71,6 @@ passport.use(
 );
 
 app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
 
 module.exports = app;
