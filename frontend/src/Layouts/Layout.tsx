@@ -6,6 +6,8 @@ import Certificate from "../pages/Certificate";
 import CoursePage from "../pages/CoursePage";
 import ForumPage from "../pages/ForumPage";
 import CourseMap from "../pages/CourseMap";
+import Setting from "../pages/Setting"
+import Editor from "../pages/Editor";
 
 function Layout() {
   return (
@@ -18,6 +20,8 @@ function Layout() {
             <Route path="/badges" element={<BadgePage />} />
             <Route path="/certificates" element={<Certificate />} />
             <Route path="/forum" element={<ForumPage />} />
+            <Route path="/setting" element={<Setting />} />
+            <Route path="/editor" element={<Editor />} />
           </Routes>
     </Router>
   );
