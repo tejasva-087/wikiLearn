@@ -28,22 +28,18 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Hash the password before saving
 userSchema.pre('save', async function (next) {
-  // Only run this function if password was actually modified
   if (!this.isModified('password') || !this.password) {
     return next();
   }
 
-  // Hash the password with cost of 12
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-// Method to check if password is correct
-userSchema.methods.correctPassword = async (candidatePassword, userPassword) =>
-  await bcrypt.compare(candidatePassword, userPassword);
+userSchema.methods.correctPassword = async (candidatePassword, userPassword) => await bcrypt.compare(candidatePassword, userPassword);
+
+userSchema.methods.comparePassword = userSchema.methods.correctPassword;
 
 const User = mongoose.model('User', userSchema);
-
 module.exports = User;

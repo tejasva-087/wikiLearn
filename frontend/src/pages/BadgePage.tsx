@@ -146,11 +146,11 @@ function BadgePage() {
           </div>
         </div>
 
-        {/* Achievement Bar */}
-        <Achievements></Achievements>
-      </div>
-    </div>
-  );
+				{/* Achievement Bar */}
+				<Achievements />
+			</div>
+		</div>
+	);
 }
 
 export default BadgePage;

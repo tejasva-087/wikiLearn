@@ -1,7 +1,8 @@
-const mongoose = require("mongoose");
+const express = require("express");
+const { fivePillers } = require("../controllers/chatBotController");
 
-const router = mongoose.Router();
+const router = express.Router();
 
-router.route("/");
+router.route("/fivepillers").post(fivePillers);
 
 module.exports = router;

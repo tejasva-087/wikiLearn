@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "../components/Header";
+import { Routes, Route } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import BadgePage from "../pages/BadgePage";
 import Certificate from "../pages/Certificate";
@@ -28,7 +28,3 @@ function Layout() {
 }
 
 export default Layout;
-
-  
-
-
