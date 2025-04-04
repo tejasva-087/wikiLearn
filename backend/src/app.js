@@ -10,6 +10,8 @@ const userRoutes = require("./routes/userRouter");
 const GlobalErrorHandler = require("./controllers/errorController");
 const chatbotRoutes = require("./routes/chatBotRouter");
 const quizRoutes = require("./routes/quizRouter");
+const courseRoutes = require("./routes/courseRouter");
+const levelRoutes = require("./routes/levelRoute");
 const AppError = require("./utils/AppError");
 
 const app = express();
@@ -82,6 +84,8 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/chatbot", chatbotRoutes);
 app.use("/quiz", quizRoutes);
+app.use("/course", courseRoutes);
+app.use("/level", levelRoutes);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
