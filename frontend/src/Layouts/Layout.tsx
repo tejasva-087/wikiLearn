@@ -12,7 +12,7 @@ function Layout() {
 		<div>
 			<Header />
 			<Routes>
-				<Route index element={<HomePage />} />
+				<Route path="/" element={<HomePage />} />
 				<Route path="courses" element={<CoursePage />} />
 				<Route path="course-map" element={<CourseMap />} />
 				<Route path="badges" element={<BadgePage />} />
