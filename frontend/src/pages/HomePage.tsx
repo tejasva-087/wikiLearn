@@ -8,7 +8,7 @@ function HomePage() {
         {/* Side Bar */}
         <Sidebar></Sidebar>
         {/* Home Page main content */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto mt-2">
           <div className="bg-blue-600 text-white rounded-lg p-6 mt-3 relative">
             <h2 className="text-xl font-semibold mb-2 ">
               Continue, Fundamental pillars of wikipedia course

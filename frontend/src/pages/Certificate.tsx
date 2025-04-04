@@ -1,5 +1,21 @@
+
+import Achievements from "../components/Achievements";
+import Sidebar from "../components/Sidebar";
+
 function Certificate() {
-  return <div>Certificate</div>;
+  return (
+    <div>
+      <div className="flex h-screen">
+        {/* Side Bar */}
+        <Sidebar></Sidebar>
+        {/* Home Page main content */}
+        <div className="max-w-4xl text-3xl mx-auto mt-2">Certificate Page</div>
+
+        {/* Achievement Bar */}
+        <Achievements></Achievements>
+      </div>
+    </div>
+  );
 }
 
 export default Certificate;
