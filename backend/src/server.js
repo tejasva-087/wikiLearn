@@ -1,6 +1,6 @@
 require('dotenv').config({ path: `${__dirname}/config.env` });
 
-// HANDELING THE UNCAUGHT EXCEPTION ERRORS (SYNCHRONOUS ERRORS)
+// HANDLING THE UNCAUGHT EXCEPTION ERRORS (SYNCHRONOUS ERRORS)
 process.on('uncaughtException', (err) => {
   console.log(err.name, err.message);
   console.log('UNCAUGHT EXCEPTION! Shutting down...');
@@ -10,7 +10,7 @@ process.on('uncaughtException', (err) => {
 const mongoose = require('mongoose');
 const app = require('./app');
 
-// DATABASE CONNECTIVUTY
+// DATABASE CONNECTIVITY
 const dbString =
   process.env.NODE_ENV === 'development'
     ? process.env.DATABASE_DEV.replace('<DATABASE>', process.env.DATABASE_NAME)
@@ -23,13 +23,12 @@ mongoose.connect(dbString).then(() => {
   console.log('DB CONNECTED');
 });
 
-// STARTING THE SERVER
-const port = process.env.PORT;
-const server = app.listen(port, (_req, _res) => {
-  console.log(`Server started at port ${port}`);
+const port = process.env.PORT || 3000;
+const server = app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
 
-// HANDELING THE UNHANDLED REJECTION ERRORS (ASYNCHRONOUS ERRORS)
+// HANDLING UNHANDLED REJECTION ERRORS (ASYNCHRONOUS ERRORS)
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
   console.log('UNHANDLED REJECTION! Shutting down...');
