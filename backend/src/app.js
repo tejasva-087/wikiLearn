@@ -1,19 +1,24 @@
-const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const cors = require('cors');
-const config = require('./config/auth.config');
-const authRoutes = require('./routes/auth.routes');
-const User = require('./models/userModel');
-const userRoutes = require('./routes/userRouter');
+const express = require("express");
+const session = require("express-session");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const cors = require("cors");
+const config = require("./config/auth.config");
+const authRoutes = require("./routes/auth.routes");
+const User = require("./models/userModel");
+const userRoutes = require("./routes/userRouter");
+const GlobalErrorHandler = require("./controllers/errorController");
+const chatbotRoutes = require("./routes/chatBotRouter");
+const AppError = require("./utils/AppError");
 
 const app = express();
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 app.use(session(config.session));
@@ -32,7 +37,7 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-console.log('Google OAuth Config:', {
+console.log("Google OAuth Config:", {
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 });
@@ -42,8 +47,8 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'http://localhost:3000/auth/google/callback',
-      scope: ['profile', 'email'],
+      callbackURL: "http://localhost:3000/auth/google/callback",
+      scope: ["profile", "email"],
     },
     async (_accessToken, _refreshToken, profile, done) => {
       try {
@@ -51,13 +56,15 @@ passport.use(
 
         if (!user) {
           const email = profile.emails?.[0]?.value;
-          const [firstName, ...lastNames] = (profile.displayName || '').split(' ');
+          const [firstName, ...lastNames] = (profile.displayName || "").split(
+            " ",
+          );
 
           user = await User.create({
             githubId: profile.id,
             email: email || `${profile.username}@github.com`,
             name: firstName || profile.username,
-            surname: lastNames.join(' '),
+            surname: lastNames.join(" "),
             avatar: profile.photos[0].value,
           });
         }
@@ -66,11 +73,18 @@ passport.use(
       } catch (error) {
         return done(error);
       }
-    }
-  )
+    },
+  ),
 );
 
-app.use('/auth', authRoutes);
-app.use('/users', userRoutes);
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/chatbot", chatbotRoutes);
+
+app.all("*", (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+app.use(GlobalErrorHandler);
 
 module.exports = app;

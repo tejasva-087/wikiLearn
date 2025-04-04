@@ -8,7 +8,6 @@
   },
   "type": "commonjs",
   "dependencies": {
-    "@google/genai": "^0.7.0",
     "@auth/express": "^0.9.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
