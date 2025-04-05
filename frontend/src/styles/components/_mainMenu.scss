@@ -1,0 +1,12 @@
+.main-menu {
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-right: 0.1rem solid var(--color-white-tertiary);
+  padding: 2.4rem 1.4rem;
+  height: 100%;
+
+  & > .link {
+    width: 15vw;
+    justify-content: flex-start;
+  }
+}

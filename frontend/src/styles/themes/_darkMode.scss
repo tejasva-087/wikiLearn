@@ -1,0 +1,11 @@
+@use '../abstracts/variables' as *;
+
+.dark-mode{
+  --color-white-primary: #{$color-black-primary};
+  --color-white-secondary: #{$color-black-secondary};
+  --color-white-tertiary:  #{$color-black-tertiary};
+  
+  --color-black-primary: #{$color-white-primary};
+  --color-black-secondary: #{$color-white-secondary};
+  --color-black-tertiary: #{$color-white-tertiary};
+}

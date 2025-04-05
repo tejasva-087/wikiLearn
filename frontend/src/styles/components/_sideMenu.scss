@@ -1,0 +1,14 @@
+.side-menu {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  padding: 1.4rem 2.4rem;
+  border-left: 0.1rem solid var(--color-white-tertiary);
+  height: 100%;
+
+  & > .stats {
+    width: 15vw;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+}

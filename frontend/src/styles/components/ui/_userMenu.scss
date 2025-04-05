@@ -1,0 +1,44 @@
+.user {
+  position: relative;
+
+  &-img {
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: 0.8rem;
+  }
+
+  &-menu {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition: all 0.3s;
+
+    position: absolute;
+    top: 100%;
+    right: 0;
+
+    padding: 0.8rem 1.2rem;
+  }
+
+  &-nav {
+    width: 20vw;
+    background-color: var(--color-white-primary);
+    border: 0.1rem solid var(--color-white-tertiary);
+    border-radius: 1.2rem;
+    padding: 1.6rem 2.4rem;
+    text-align: center;
+  }
+
+  &-figure {
+    padding-bottom: 1.6rem;
+    width: 100%;
+    border-bottom: 0.1rem solid var(--color-white-tertiary);
+  }
+
+  &:hover &-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}

@@ -1,0 +1,39 @@
+$color-black-primary: #18181b;
+$color-black-secondary: #27272a;
+$color-black-tertiary: #52525c;
+
+$color-white-primary: #fff;
+$color-white-secondary: #f7f7f7;
+$color-white-tertiary: #e4e4e7;
+
+:root {
+  --color-black-primary: #{$color-black-primary};
+  --color-black-secondary: #{$color-black-secondary};
+  --color-black-tertiary: #{$color-black-tertiary};
+
+  --color-white-primary: #{$color-white-primary};
+  --color-white-secondary: #{$color-white-secondary};
+  --color-white-tertiary: #{$color-white-tertiary};
+
+  --color-primary: #3266cd;
+  --color-primary-dark: #2852a4;
+
+  --color-green: #84cc16;
+  --color-red: #ff3c38;
+}
+
+$font-family: "Satoshi-Variable";
+$logo-font: "Hoefler Text";
+
+$h1: 6.4rem;
+$h2: 3.8rem;
+$h3: 2.4rem;
+
+$p1: 2rem;
+$p2: 1.8rem;
+$p3: 1.6rem;
+
+$light: 300;
+$normal: 400;
+$medium: 500;
+$bold: 700;

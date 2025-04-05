@@ -1,0 +1,67 @@
+@use "../../abstracts/variables" as *;
+
+.course-page {
+  position: relative;
+
+  & > .heading-tertiary {
+    margin-bottom: 3.4rem;
+  }
+}
+
+.number-circle {
+  color: $color-white-primary;
+  z-index: 9999;
+  position: relative;
+
+  &::after {
+    position: absolute;
+    content: "";
+    width: 4.4rem;
+    height: 4.4rem;
+    background-color: var(--color-primary);
+    color: $color-white-primary;
+    border-radius: 50%;
+    z-index: -1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.road-map {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  width: 100%;
+  position: relative;
+
+  &--line {
+    width: 0.2rem;
+    height: 100svh;
+    background-color: var(--color-primary);
+    position: relative;
+  }
+}
+
+.level {
+  gap: 2.4rem;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &-text {
+    width: 24rem;
+  }
+}
+
+.level-1 {
+  top: -3%;
+  left: 50%;
+}
+
+.level-2 {
+  top: 50%;
+  right: 50%;
+}

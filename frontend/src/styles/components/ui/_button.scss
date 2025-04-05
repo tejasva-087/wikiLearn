@@ -1,0 +1,46 @@
+@use "../../abstracts/variables" as *;
+
+.btn {
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &--normal {
+    padding: 0.8rem 1.2rem;
+    background-color: var(--color-white-primary);
+    border-radius: 0.8rem;
+
+    &--combined {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    &:hover,
+    &:active {
+      background-color: var(--color-white-secondary);
+    }
+  }
+
+  &--primary {
+    background-color: var(--color-primary);
+    color: $color-white-primary;
+    padding: 0.6rem;
+    border-radius: 0.6rem;
+
+    &:hover,
+    &:active {
+      background-color: var(--color-primary-dark);
+    }
+  }
+
+  &--white {
+    background-color: $color-white-primary;
+    color: var(--color-primary);
+  }
+}

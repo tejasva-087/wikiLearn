@@ -1,0 +1,11 @@
+.nav {
+  &-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.8rem 2.4rem;
+    border-bottom: 0.1rem solid var(--color-white-tertiary);
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
