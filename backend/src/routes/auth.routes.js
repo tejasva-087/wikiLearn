@@ -1,10 +1,10 @@
-const express = require('express');
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const config = require('../config/auth.config');
-const User = require('../models/userModel');
-const catchAsync = require('../utils/catchAsync');
-const { verifyToken } = require('../middleware/auth.middleware');
+const express = require("express");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const config = require("../config/auth.config");
+const User = require("../models/userModel");
+const catchAsync = require("../utils/catchAsync");
+const { verifyToken } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
@@ -14,16 +14,39 @@ const generateToken = (user) => {
   });
 };
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
 
 router.get(
-  '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
     const token = generateToken(req.user);
-    res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
-  }
+    const userData = encodeURIComponent(
+      JSON.stringify({
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+      }),
+    );
+
+    res.redirect(`${process.env.FRONTEND_URL}?token=${token}&user=${userData}`);
+  },
 );
+
+// ... existing code ...
+
+// Ensure consistent user data structure
+const formatUserResponse = (user) => {
+  return {
+    id: user._id || user.id,
+    name: user.name,
+    email: user.email,
+    // Add other necessary user fields
+  };
+};
 
 router.post(
   '/signin',
@@ -44,7 +67,12 @@ router.post(
 
     // If everything ok, send token to client
     const token = generateToken(user);
-    res.status(200).json({ token });
+    
+    // Return user data with consistent structure
+    res.status(200).json({ 
+      token,
+      user: formatUserResponse(user)
+    });
   })
 );
 
@@ -69,7 +97,12 @@ router.post(
 
     // Generate token
     const token = generateToken(newUser);
-    res.status(201).json({ token });
+    
+    // Return user data with consistent structure
+    res.status(201).json({ 
+      token,
+      user: formatUserResponse(newUser)
+    });
   })
 );
 
@@ -82,7 +115,8 @@ router.get(
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(200).json(user);
+    
+    res.status(200).json(formatUserResponse(user));
   })
 );
 
