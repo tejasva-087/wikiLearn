@@ -9,12 +9,10 @@ import axios from "axios";
 
 axios.defaults.baseURL = "http://localhost:3000";
 
-// Define types
 interface User {
 	id: string;
 	name: string;
 	email: string;
-	// Add other user properties as needed
 }
 
 interface AuthResponse {
@@ -39,10 +37,8 @@ interface AuthContextType {
 	error: string | null;
 }
 
-// Create the context with a default value
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Custom hook to use the auth context
 export const useAuth = () => {
 	const context = useContext(AuthContext);
 	if (!context) {
@@ -52,12 +48,27 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-	const [user, setUser] = useState<User | null>(null);
-	const [token, setToken] = useState<string | null>(null);
+	const [user, setUser] = useState<User | null>(() => {
+		const storedUser = localStorage.getItem("user");
+		if (storedUser) {
+			try {
+				return JSON.parse(storedUser);
+			} catch (error) {
+				console.error("Failed to parse stored user:", error);
+				localStorage.removeItem("user");
+				return null;
+			}
+		}
+		return null;
+	});
+
+	const [token, setToken] = useState<string | null>(() => {
+		return localStorage.getItem("token") || null;
+	});
+
 	const [_isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// Set up axios auth header when token changes
 	useEffect(() => {
 		if (token) {
 			axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -67,67 +78,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	}, [token]);
 
 	useEffect(() => {
-		// Use a single token key for consistency
-		const storedToken = localStorage.getItem("token");
-		const storedUser = localStorage.getItem("user");
+		const queryParams = new URLSearchParams(window.location.search);
+		const urlToken = queryParams.get("token");
+		const urlUser = queryParams.get("user");
 
-		if (storedToken) {
-			setToken(storedToken);
+		if (urlToken) {
+			localStorage.setItem("token", urlToken);
+			setToken(urlToken);
 
-			// Only try to parse the user if it exists
-			if (storedUser) {
+			if (urlUser) {
 				try {
-					setUser(JSON.parse(storedUser));
+					const userData = JSON.parse(decodeURIComponent(urlUser));
+					localStorage.setItem("user", JSON.stringify(userData));
+					setUser(userData);
 				} catch (error) {
-					console.error("Failed to parse stored user:", error);
-					// Clear invalid data
-					localStorage.removeItem("user");
+					console.error("Failed to parse user data from URL:", error);
 				}
-			} else {
-				// If we have a token but no user, try to fetch user data
-				fetchUserData(storedToken);
 			}
+
+			window.history.replaceState({}, document.title, window.location.pathname);
 		}
 
 		setIsLoading(false);
 	}, []);
 
-	const fetchUserData = async (authToken: string) => {
-		try {
-			const response = await axios.get("/auth/me", {
-				headers: {
-					Authorization: `Bearer ${authToken}`,
-				},
-			});
-			setUser(response.data);
-			localStorage.setItem("user", JSON.stringify(response.data));
-		} catch (error) {
-			console.error("Failed to fetch user data:", error);
-			// If we can't get the user data, the token might be invalid
-			logout();
-		}
-	};
-
 	const handleAuthResponse = (response: AuthResponse) => {
 		const { token, user } = response;
 		localStorage.setItem("token", token);
 		localStorage.setItem("user", JSON.stringify(user));
+
 		setToken(token);
 		setUser(user);
 		setError(null);
+
+		axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 	};
 
 	const login = async (email: string, password: string) => {
 		try {
+			setIsLoading(true);
 			const response = await axios.post("/auth/signin", {
 				email,
 				password,
 			});
+
 			handleAuthResponse(response.data);
 			return true;
 		} catch (error) {
 			console.error("Login failed:", error);
+			setError("Invalid email or password");
 			return false;
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -140,13 +142,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		try {
 			setIsLoading(true);
 			const response = await axios.post("/auth/signup", {
-				name,
-				surname,
+				name: `${name} ${surname}`,
 				email,
 				password,
 			});
 
 			handleAuthResponse(response.data);
+			// biome-ignore lint/suspicious/noExplicitAny:
 		} catch (err: any) {
 			setError(err.response?.data?.message || "Failed to sign up");
 			throw err;
@@ -160,6 +162,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		localStorage.removeItem("user");
 		setToken(null);
 		setUser(null);
+		axios.defaults.headers.common.Authorization = undefined;
 	};
 
 	const googleAuth = () => {
@@ -171,6 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			setIsLoading(true);
 			await axios.post("/users/forgotpassword", { email });
 			setError(null);
+			// biome-ignore lint/suspicious/noExplicitAny:
 		} catch (err: any) {
 			setError(
 				err.response?.data?.message ||
@@ -190,7 +194,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		signup,
 		googleAuth,
 		forgotPassword,
-		isAuthenticated: !!token,
+		isAuthenticated: !!token && !!user,
 		error,
 	};
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import axios from "axios";
 import type { ForumPostType } from "../types";
 import { useAuth } from "../../auth/context/AuthContext";
@@ -8,7 +8,7 @@ const API_URL =
 
 export function useForumApi() {
 	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const [error, _setError] = useState<string | null>(null);
 	const { token } = useAuth();
 
 	const api = useMemo(() => {
@@ -21,206 +21,244 @@ export function useForumApi() {
 		});
 	}, [token]);
 
-	const fetchPosts = async (page = 1, limit = 10): Promise<ForumPostType[]> => {
-		setIsLoading(true);
-		setError(null);
+	const setAuthToken = useCallback((newToken: string) => {
+		axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+	}, []);
 
+	const fetchPosts = useCallback(
+		async (page = 1, limit = 10): Promise<ForumPostType[]> => {
+			try {
+				setIsLoading(true);
+				const response = await api.get(`/posts?page=${page}&limit=${limit}`);
+				return response.data;
+			} catch (error) {
+				console.error("Error fetching posts:", error);
+				throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[api]
+	);
+
+	const fetchUserPosts = useCallback(
+		async (userId: string): Promise<ForumPostType[]> => {
+			try {
+				setIsLoading(true);
+				const response = await api.get(`/posts/user/${userId}`);
+				return response.data;
+			} catch (error) {
+				console.error("Error fetching user posts:", error);
+				throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[api]
+	);
+
+	const fetchSavedPosts = useCallback(async (): Promise<ForumPostType[]> => {
 		try {
-			const response = await api.get("/posts", {
-				params: { page, limit },
-			});
-			return response.data.posts;
-		} catch (err) {
-			setError("Failed to fetch posts");
-			throw err;
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const fetchUserPosts = async (userId: string): Promise<ForumPostType[]> => {
-		setIsLoading(true);
-		setError(null);
-
-		try {
-			const response = await api.get(`/posts/user/${userId}`);
-			return response.data.posts;
-		} catch (err) {
-			setError("Failed to fetch user posts");
-			throw err;
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const fetchSavedPosts = async (): Promise<ForumPostType[]> => {
-		setIsLoading(true);
-		setError(null);
-
-		try {
-			// Use api instance instead of axios directly
+			setIsLoading(true);
 			const response = await api.get("/posts/saved");
-			return response.data.posts;
-		} catch (err) {
-			setError("Failed to fetch saved posts");
-			throw err;
+			return response.data;
+		} catch (error) {
+			console.error("Error fetching saved posts:", error);
+			throw error;
 		} finally {
 			setIsLoading(false);
 		}
-	};
-	const fetchPostById = async (postId: string): Promise<ForumPostType> => {
-		setIsLoading(true);
-		setError(null);
+	}, [api]);
 
-		try {
-			// Use api instance instead of axios directly
-			const response = await api.get(`/posts/${postId}`);
-			return response.data.post;
-		} catch (err) {
-			setError("Failed to fetch post");
-			throw err;
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const fetchPostById = useCallback(
+		async (postId: string): Promise<ForumPostType> => {
+			try {
+				setIsLoading(true);
+				const response = await api.get(`/posts/${postId}`);
+				return response.data;
+			} catch (error) {
+				console.error(`Error fetching post ${postId}:`, error);
+				throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[api]
+	);
 
-	const createPost = async (
-		title: string,
-		content: string,
-		tags?: string[]
-	): Promise<ForumPostType> => {
-		setIsLoading(true);
-		setError(null);
+	const createPost = useCallback(
+		async (
+			title: string,
+			content: string,
+			tags?: string[]
+		): Promise<ForumPostType> => {
+			try {
+				setIsLoading(true);
+				const response = await api.post("/posts", {
+					title,
+					content,
+					tags,
+				});
+				return response.data;
+			} catch (error) {
+				console.error("Error creating post:", error);
+				throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[api]
+	);
 
-		try {
-			// Use the api instance instead of axios directly
-			const response = await api.post("/posts", {
-				title,
-				content,
-				tags,
-			});
-			return response.data.post;
-		} catch (err) {
-			setError("Failed to create post");
-			throw err;
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const updatePost = useCallback(
+		async (
+			postId: string,
+			data: { title?: string; content?: string; tags?: string[] }
+		): Promise<ForumPostType> => {
+			try {
+				setIsLoading(true);
+				const response = await api.put(`/posts/${postId}`, data);
+				return response.data;
+			} catch (error) {
+				console.error(`Error updating post ${postId}:`, error);
+				throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[api]
+	);
 
-	const updatePost = async (
-		postId: string,
-		data: { title?: string; content?: string; tags?: string[] }
-	): Promise<ForumPostType> => {
-		setIsLoading(true);
-		setError(null);
+	const deletePost = useCallback(
+		async (postId: string): Promise<void> => {
+			try {
+				setIsLoading(true);
+				await api.delete(`/posts/${postId}`);
+			} catch (error) {
+				console.error(`Error deleting post ${postId}:`, error);
+				throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[api]
+	);
 
-		try {
-			const response = await api.put(`/posts/${postId}`, data);
-			return response.data.post;
-		} catch (err) {
-			setError("Failed to update post");
-			throw err;
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const likePost = useCallback(
+		// biome-ignore lint/suspicious/noExplicitAny:
+		async (postId: string): Promise<any> => {
+			try {
+				const response = await api.post(`/posts/${postId}/like`);
+				return response.data;
+			} catch (error) {
+				console.error(`Error liking post ${postId}:`, error);
+				throw error;
+			}
+		},
+		[api]
+	);
 
-	const deletePost = async (postId: string): Promise<void> => {
-		setIsLoading(true);
-		setError(null);
+	const savePost = useCallback(
+		async (postId: string): Promise<void> => {
+			try {
+				await api.post(`/posts/${postId}/save`);
+			} catch (error) {
+				console.error(`Error saving post ${postId}:`, error);
+				throw error;
+			}
+		},
+		[api]
+	);
 
-		try {
-			await api.delete(`/posts/${postId}`);
-		} catch (err) {
-			setError("Failed to delete post");
-			throw err;
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const addComment = useCallback(
+		// biome-ignore lint/suspicious/noExplicitAny:
+		async (postId: string, content: string): Promise<any> => {
+			try {
+				const response = await api.post(`/posts/${postId}/comments`, {
+					content,
+				});
+				return response.data;
+			} catch (error) {
+				console.error(`Error adding comment to post ${postId}:`, error);
+				throw error;
+			}
+		},
+		[api]
+	);
 
-	const likePost = async (postId: string): Promise<void> => {
-		setError(null);
+	const addReply = useCallback(
+		async (
+			postId: string,
+			commentId: string,
+			content: string
+			// biome-ignore lint/suspicious/noExplicitAny:
+		): Promise<any> => {
+			try {
+				const response = await api.post(
+					`/posts/${postId}/comments/${commentId}/replies`,
+					{ content }
+				);
+				return response.data;
+			} catch (error) {
+				console.error(`Error adding reply to comment ${commentId}:`, error);
+				throw error;
+			}
+		},
+		[api]
+	);
 
-		try {
-			await api.post(`/posts/${postId}/like`);
-		} catch (err) {
-			setError("Failed to like post");
-			throw err;
-		}
-	};
+	const searchPosts = useCallback(
+		async (query: string): Promise<ForumPostType[]> => {
+			try {
+				setIsLoading(true);
+				const response = await api.get(
+					`/search?q=${encodeURIComponent(query)}`
+				);
+				return response.data;
+			} catch (error) {
+				console.error("Error searching posts:", error);
+				throw error;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[api]
+	);
 
-	const savePost = async (postId: string): Promise<void> => {
-		setError(null);
-
-		try {
-			await api.post(`/posts/${postId}/save`);
-		} catch (err) {
-			setError("Failed to save post");
-			throw err;
-		}
-	};
-
-	const addComment = async (postId: string, content: string): Promise<void> => {
-		setError(null);
-
-		try {
-			await api.post(`/posts/${postId}/comments`, { content });
-		} catch (err) {
-			setError("Failed to add comment");
-			throw err;
-		}
-	};
-
-	const addReply = async (
-		postId: string,
-		commentId: string,
-		content: string
-	): Promise<void> => {
-		setError(null);
-
-		try {
-			await api.post(`/posts/${postId}/comments/${commentId}/replies`, {
-				content,
-			});
-		} catch (err) {
-			setError("Failed to add reply");
-			throw err;
-		}
-	};
-
-	const searchPosts = async (query: string): Promise<ForumPostType[]> => {
-		setIsLoading(true);
-		setError(null);
-
-		try {
-			const response = await api.get("/search", {
-				params: { q: query },
-			});
-			return response.data.posts;
-		} catch (err) {
-			setError("Failed to search posts");
-			throw err;
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	return {
-		isLoading,
-		error,
-		fetchPosts,
-		fetchUserPosts,
-		fetchSavedPosts,
-		fetchPostById,
-		createPost,
-		updatePost,
-		deletePost,
-		likePost,
-		savePost,
-		addComment,
-		addReply,
-		searchPosts,
-	};
+	return useMemo(
+		() => ({
+			setAuthToken,
+			isLoading,
+			error,
+			fetchPosts,
+			fetchUserPosts,
+			fetchSavedPosts,
+			fetchPostById,
+			createPost,
+			updatePost,
+			deletePost,
+			likePost,
+			savePost,
+			addComment,
+			addReply,
+			searchPosts,
+		}),
+		[
+			setAuthToken,
+			isLoading,
+			error,
+			fetchPosts,
+			fetchUserPosts,
+			fetchSavedPosts,
+			fetchPostById,
+			createPost,
+			updatePost,
+			deletePost,
+			likePost,
+			savePost,
+			addComment,
+			addReply,
+			searchPosts,
+		]
+	);
 }

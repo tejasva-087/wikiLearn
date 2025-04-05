@@ -3,6 +3,7 @@ import Achievements from "../components/Achievements";
 import Sidebar from "../components/Sidebar";
 
 function Editor() {
+<<<<<<< HEAD
   const [text, setText] = useState("");
   const [title, setTitle] = useState("Untitled Document");
   const [isSaved, setIsSaved] = useState(true);
@@ -501,6 +502,20 @@ function Editor() {
       </div>
     </div>
   );
+=======
+	return (
+		<div>
+			<div className="flex h-screen">
+				{/* Side Bar */}
+				<Sidebar />
+				{/* Home Page main content */}
+				<div className="max-w-4xl mx-auto text-3xl mt-2">Editor</div>
+				{/* Achievement Bar */}
+				<Achievements />
+			</div>
+		</div>
+	);
+>>>>>>> 7458965608a53c9b62ea0828332af33184fe2265
 }
 
 export default Editor;
