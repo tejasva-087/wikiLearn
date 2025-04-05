@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const { errorLogger, requestLogger } = require('./middleware/errorHandler');
+const GlobalErrorHandler = require('./controllers/error-controller');
 
 dotenv.config({ path: './config.env' });
 
@@ -21,6 +22,8 @@ app.use('/api/topics', require('./routes/topics'));
 app.use('/api/subtopics', require('./routes/subtopics'));
 app.use('/api/quizzes', require('./routes/quizzes'));
 app.use('/api/progress', require('./routes/progress'));
+app.use('/api/chat', require('./routes/chatbot'));
+app.use('/api/editor', require('./routes/editor'));
 
 app.get('/', (req, res) => {
   res.send('Wikimedia Learning API is running');
@@ -33,6 +36,7 @@ app.use((req, res, next) => {
 });
 
 app.use(errorLogger);
+app.use(GlobalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
