@@ -1,12 +1,12 @@
 import VisualIcons from "./VisualIcons";
 
-function Stats({ type, points }) {
+function Stats({ type, points, hide = false, className }) {
   return (
-    <div className="stats flex-center gap--mid">
+    <div className={`stats flex-center gap--mid ${className}`}>
       <VisualIcons type={type} />
 
       <p className="text-seconadry">
-        {type} {points}
+        {hide === true ? "" : type} {points}
       </p>
     </div>
   );

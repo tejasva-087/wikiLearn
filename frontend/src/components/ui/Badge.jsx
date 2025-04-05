@@ -1,8 +1,10 @@
 import { Medal } from "@phosphor-icons/react";
 
-function Badge({ placeholderImg, title, date, type }) {
+function Badge({ placeholderImg, title, date, type, className }) {
   return (
-    <div className={`badge badge--${type} flex-center flex-column`}>
+    <div
+      className={`badge badge--${type} flex-center flex-column ${className}`}
+    >
       <img src={placeholderImg} alt="badge image" className="badge-img" />
       <div className="badge-text">
         <p className="text-seconadry">{title}</p>

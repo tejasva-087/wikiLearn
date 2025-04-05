@@ -2,6 +2,9 @@ import Navigation from "../components/Navigation";
 import MainMenu from "../components/MainMenu";
 import SideMenu from "../components/SideMenu";
 import NumberCircle from "../components/ui/NumberCircle";
+import Badge from "../components/ui/Badge";
+import placeholderImg from "../assets/img/placeholderImg.png";
+import Stats from "../components/ui/Stats";
 
 function CoursePage() {
   return (
@@ -21,13 +24,38 @@ function CoursePage() {
                 Wikipedia is an encyclopedia
               </p>
             </div>
+            <Badge
+              placeholderImg={placeholderImg}
+              className={"road-map--badge badge-1"}
+              title="First piler of Wikipedia"
+              date="2023-10-01"
+            ></Badge>
+            <Stats
+              type="points"
+              points={"4 points"}
+              hide={true}
+              className="road-map-points points-1"
+            />
 
-            <div className="level  level-2">
+            <div className="level level-2">
               <p className="text-seconadry level-text">
                 Wikipedia is an encyclopedia
               </p>
-              <NumberCircle num={1}></NumberCircle>
+              <NumberCircle num={2}></NumberCircle>
             </div>
+
+            <Badge
+              placeholderImg={placeholderImg}
+              className={"road-map--badge badge-2"}
+              title="First piler of Wikipedia"
+              date="2023-10-01"
+            ></Badge>
+            <Stats
+              type="points"
+              points={"4 points"}
+              hide={true}
+              className="road-map-points points-2"
+            />
             <div className="road-map--line"></div>
           </div>
         </div>

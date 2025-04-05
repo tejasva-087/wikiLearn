@@ -1,0 +1,39 @@
+.editor {
+  height: 100%;
+  flex: 1;
+
+  &-text-area {
+    width: 95%;
+    height: 93%;
+    padding: 2rem;
+    border-radius: 1.6rem;
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+    color: var(--color-black);
+    box-shadow: var(--shadow-1);
+    resize: none;
+    border: 0.1rem solid var(--color-white-tertiary);
+    background-color: var(--color-white-priamry);
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &-output {
+    display: flex;
+    align-items: flex-start;
+    height: 100%;
+    padding: 2.4rem 1.4rem;
+    gap: 2.4rem;
+
+    flex: 0.4;
+  }
+}
+
+.editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  list-style: circle;
+}

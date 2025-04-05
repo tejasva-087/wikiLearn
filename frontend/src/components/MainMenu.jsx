@@ -6,7 +6,7 @@ import {
   Medal,
   Books,
   Certificate,
-  UsersThree,
+  Pencil,
 } from "@phosphor-icons/react";
 
 const options = [
@@ -36,9 +36,9 @@ const options = [
   },
   {
     id: 5,
-    icon: <UsersThree className="icon--big" />,
-    label: "Forum",
-    link: "/forum",
+    icon: <Pencil className="icon--big" />,
+    label: "Editor",
+    link: "/editor",
   },
 ];
 
