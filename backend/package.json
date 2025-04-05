@@ -3,7 +3,7 @@
   "module": "server.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "bun run server.js",
+    "dev": "nodemon run server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."
