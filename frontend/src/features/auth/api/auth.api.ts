@@ -52,12 +52,12 @@ export interface AuthResponse {
 
 export const authService = {
 	signup: async (data: SignupData): Promise<AuthResponse> => {
-		const response = await authApi.post("/users/signup", data);
+		const response = await authApi.post("/auth/signup", data);
 		return response.data;
 	},
 
 	login: async (data: LoginData): Promise<AuthResponse> => {
-		const response = await authApi.post("/users/login", data);
+		const response = await authApi.post("/auth/signin", data);
 		return response.data;
 	},
 

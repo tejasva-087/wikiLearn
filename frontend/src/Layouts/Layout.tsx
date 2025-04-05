@@ -10,21 +10,23 @@ import Setting from "../pages/Setting"
 import Editor from "../pages/Editor";
 
 function Layout() {
-  return (
-    <Router>
-      <Header />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/courses" element={<CoursePage />} />
-            <Route path="/course-map" element={<CourseMap />} />
-            <Route path="/badges" element={<BadgePage />} />
-            <Route path="/certificates" element={<Certificate />} />
-            <Route path="/forum" element={<ForumPage />} />
-            <Route path="/setting" element={<Setting />} />
-            <Route path="/editor" element={<Editor />} />
-          </Routes>
-    </Router>
-  );
+	return (
+		<div>
+			<Header />
+			<Routes>
+				<Route path="/" element={<HomePage />} />
+				<Route path="courses" element={<CoursePage />} />
+				<Route path="course-map" element={<CourseMap />} />
+				<Route path="badges" element={<BadgePage />} />
+				<Route path="certificates" element={<Certificate />} />
+                <Route path="/setting" element={<Setting />} />
+                <Route path="/editor" element={<Editor />} />
+				<Route path="forum" element={<ForumPage />} />
+				<Route path="forum/post/:postId" element={<ForumPage />} />
+			</Routes>
+		</div>
+	);
+
 }
 
 export default Layout;

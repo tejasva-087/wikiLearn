@@ -57,24 +57,19 @@ exports.signin = async (req, res) => {
     const { email, password } = req.body;
     console.log("Login attempt for:", email);
 
-    // Check if User is properly imported
     if (!User || typeof User.findOne !== "function") {
       console.error("User model is not properly defined:", User);
-      return res
-        .status(500)
-        .json({
-          message: "Internal server error - database model not available",
-        });
+      return res.status(500).json({
+        message: "Internal server error - database model not available",
+      });
     }
 
-    // Find user with password field included
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       console.log("User not found:", email);
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Use correctPassword method
     const isValidPassword = await user.correctPassword(password, user.password);
     if (!isValidPassword) {
       console.log("Invalid password for user:", email);

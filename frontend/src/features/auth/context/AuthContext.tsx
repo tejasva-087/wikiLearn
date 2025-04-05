@@ -5,53 +5,108 @@ import {
 	useEffect,
 	type ReactNode,
 } from "react";
-import { authService, type AuthResponse } from "../api/auth.api";
+import axios from "axios";
 
+axios.defaults.baseURL = "http://localhost:3000";
+
+// Define types
 interface User {
 	id: string;
-	email: string;
 	name: string;
-	surname: string;
+	email: string;
+	// Add other user properties as needed
+}
+
+interface AuthResponse {
+	token: string;
+	user: User;
 }
 
 interface AuthContextType {
 	user: User | null;
 	token: string | null;
-	isAuthenticated: boolean;
-	isLoading: boolean;
-	error: string | null;
-	login: (email: string, password: string) => Promise<void>;
+	login: (email: string, password: string) => Promise<boolean>;
+	logout: () => void;
 	signup: (
 		name: string,
 		surname: string,
 		email: string,
 		password: string
 	) => Promise<void>;
-	logout: () => void;
 	googleAuth: () => void;
 	forgotPassword: (email: string) => Promise<void>;
+	isAuthenticated: boolean;
+	error: string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create the context with a default value
+const AuthContext = createContext<AuthContextType | null>(null);
+
+// Custom hook to use the auth context
+export const useAuth = () => {
+	const context = useContext(AuthContext);
+	if (!context) {
+		throw new Error("useAuth must be used within an AuthProvider");
+	}
+	return context;
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [user, setUser] = useState<User | null>(null);
 	const [token, setToken] = useState<string | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
+	const [_isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
+	// Set up axios auth header when token changes
 	useEffect(() => {
-		// Check if user is already logged in
+		if (token) {
+			axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+		} else {
+			axios.defaults.headers.common.Authorization = undefined;
+		}
+	}, [token]);
+
+	useEffect(() => {
+		// Use a single token key for consistency
 		const storedToken = localStorage.getItem("token");
 		const storedUser = localStorage.getItem("user");
 
-		if (storedToken && storedUser) {
+		if (storedToken) {
 			setToken(storedToken);
-			setUser(JSON.parse(storedUser));
+
+			// Only try to parse the user if it exists
+			if (storedUser) {
+				try {
+					setUser(JSON.parse(storedUser));
+				} catch (error) {
+					console.error("Failed to parse stored user:", error);
+					// Clear invalid data
+					localStorage.removeItem("user");
+				}
+			} else {
+				// If we have a token but no user, try to fetch user data
+				fetchUserData(storedToken);
+			}
 		}
 
 		setIsLoading(false);
 	}, []);
+
+	const fetchUserData = async (authToken: string) => {
+		try {
+			const response = await axios.get("/auth/me", {
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+				},
+			});
+			setUser(response.data);
+			localStorage.setItem("user", JSON.stringify(response.data));
+		} catch (error) {
+			console.error("Failed to fetch user data:", error);
+			// If we can't get the user data, the token might be invalid
+			logout();
+		}
+	};
 
 	const handleAuthResponse = (response: AuthResponse) => {
 		const { token, user } = response;
@@ -64,15 +119,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const login = async (email: string, password: string) => {
 		try {
-			setIsLoading(true);
-			const response = await authService.login({ email, password });
-			handleAuthResponse(response);
-			// biome-ignore lint/suspicious/noExplicitAny:
-		} catch (err: any) {
-			setError(err.response?.data?.message || "Failed to login");
-			throw err;
-		} finally {
-			setIsLoading(false);
+			const response = await axios.post("/auth/signin", {
+				email,
+				password,
+			});
+			handleAuthResponse(response.data);
+			return true;
+		} catch (error) {
+			console.error("Login failed:", error);
+			return false;
 		}
 	};
 
@@ -84,14 +139,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	) => {
 		try {
 			setIsLoading(true);
-			const response = await authService.signup({
+			const response = await axios.post("/auth/signup", {
 				name,
 				surname,
 				email,
 				password,
 			});
-			handleAuthResponse(response);
-			// biome-ignore lint/suspicious/noExplicitAny:
+
+			handleAuthResponse(response.data);
 		} catch (err: any) {
 			setError(err.response?.data?.message || "Failed to sign up");
 			throw err;
@@ -108,15 +163,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	const googleAuth = () => {
-		authService.googleAuth();
+		window.location.href = "http://localhost:3000/auth/google";
 	};
 
 	const forgotPassword = async (email: string) => {
 		try {
 			setIsLoading(true);
-			await authService.forgotPassword(email);
+			await axios.post("/users/forgotpassword", { email });
 			setError(null);
-			// biome-ignore lint/suspicious/noExplicitAny:
 		} catch (err: any) {
 			setError(
 				err.response?.data?.message ||
@@ -128,30 +182,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
-	return (
-		<AuthContext.Provider
-			value={{
-				user,
-				token,
-				isAuthenticated: !!token,
-				isLoading,
-				error,
-				login,
-				signup,
-				logout,
-				googleAuth,
-				forgotPassword,
-			}}
-		>
-			{children}
-		</AuthContext.Provider>
-	);
-};
+	const value = {
+		user,
+		token,
+		login,
+		logout,
+		signup,
+		googleAuth,
+		forgotPassword,
+		isAuthenticated: !!token,
+		error,
+	};
 
-export const useAuth = () => {
-	const context = useContext(AuthContext);
-	if (context === undefined) {
-		throw new Error("useAuth must be used within an AuthProvider");
-	}
-	return context;
+	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
