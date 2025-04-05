@@ -1,0 +1,60 @@
+@use "../abstracts/variables" as *;
+
+.icon {
+  &--sml {
+    width: $p2;
+    height: $p2;
+  }
+
+  &--mid {
+    width: $p1;
+    height: $p1;
+  }
+
+  &--big {
+    width: $h3;
+    height: $h3;
+  }
+}
+
+.flex-center {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.gap {
+  &--sml {
+    gap: 0.6rem;
+  }
+
+  &--mid {
+    gap: 1.2rem;
+  }
+
+  &--big {
+    gap: 1.6rem;
+  }
+}
+
+.width-full {
+  width: 100%;
+}
+
+.color-primary {
+  color: var(--color-primary);
+}
+
+.scrollable {
+  height: 100%;
+  overflow: scroll;
+  padding: 2.4rem;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
