@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import Button from "./ui/Button";
-import Logo from "./ui/logo";
+import Logo from "./ui/Logo";
 import UserMenu from "./ui/UserMenu";
 
 import { Plus, Moon, Sun } from "@phosphor-icons/react";
