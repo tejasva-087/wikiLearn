@@ -36,15 +36,11 @@ router.get(
   },
 );
 
-// ... existing code ...
-
-// Ensure consistent user data structure
 const formatUserResponse = (user) => {
   return {
     id: user._id || user.id,
     name: user.name,
     email: user.email,
-    // Add other necessary user fields
   };
 };
 
@@ -53,22 +49,18 @@ router.post(
   catchAsync(async (req, res) => {
     const { email, password } = req.body;
 
-    // Check if email and password exist
     if (!email || !password) {
       return res.status(400).json({ message: 'Please provide email and password' });
     }
 
-    // Check if user exists && password is correct
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({ message: 'Incorrect email or password' });
     }
 
-    // If everything ok, send token to client
     const token = generateToken(user);
     
-    // Return user data with consistent structure
     res.status(200).json({ 
       token,
       user: formatUserResponse(user)
@@ -81,24 +73,19 @@ router.post(
   '/signup',
   catchAsync(async (req, res) => {
     const { name, email, password } = req.body;
-
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Create new user
     const newUser = await User.create({
       name,
       email,
       password,
     });
 
-    // Generate token
     const token = generateToken(newUser);
     
-    // Return user data with consistent structure
     res.status(201).json({ 
       token,
       user: formatUserResponse(newUser)
@@ -106,7 +93,6 @@ router.post(
   })
 );
 
-// Get current user route
 router.get(
   '/me',
   verifyToken,

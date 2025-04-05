@@ -9,12 +9,10 @@ import axios from "axios";
 
 axios.defaults.baseURL = "http://localhost:3000";
 
-// Define types
 interface User {
 	id: string;
 	name: string;
 	email: string;
-	// Add other user properties as needed
 }
 
 interface AuthResponse {
@@ -39,10 +37,8 @@ interface AuthContextType {
 	error: string | null;
 }
 
-// Create the context with a default value
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Custom hook to use the auth context
 export const useAuth = () => {
 	const context = useContext(AuthContext);
 	if (!context) {
@@ -70,10 +66,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		return localStorage.getItem("token") || null;
 	});
 
-	const [isLoading, setIsLoading] = useState(true);
+	const [_isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// Set up axios auth header when token changes
 	useEffect(() => {
 		if (token) {
 			axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -82,7 +77,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}, [token]);
 
-	// Check URL for token and user data (for OAuth callbacks)
 	useEffect(() => {
 		const queryParams = new URLSearchParams(window.location.search);
 		const urlToken = queryParams.get("token");
@@ -102,7 +96,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				}
 			}
 
-			// Clean up URL
 			window.history.replaceState({}, document.title, window.location.pathname);
 		}
 
@@ -111,18 +104,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const handleAuthResponse = (response: AuthResponse) => {
 		const { token, user } = response;
-
-		// Store token and user data in localStorage
 		localStorage.setItem("token", token);
 		localStorage.setItem("user", JSON.stringify(user));
 
-		// Update state
 		setToken(token);
 		setUser(user);
 		setError(null);
 
-		// Set axios default header
-		axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+		axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 	};
 
 	const login = async (email: string, password: string) => {
@@ -159,6 +148,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			});
 
 			handleAuthResponse(response.data);
+			// biome-ignore lint/suspicious/noExplicitAny:
 		} catch (err: any) {
 			setError(err.response?.data?.message || "Failed to sign up");
 			throw err;
@@ -184,6 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			setIsLoading(true);
 			await axios.post("/users/forgotpassword", { email });
 			setError(null);
+			// biome-ignore lint/suspicious/noExplicitAny:
 		} catch (err: any) {
 			setError(
 				err.response?.data?.message ||

@@ -10,7 +10,6 @@ import type { ForumState, ForumPostType } from "../types";
 import { useForumApi } from "../hooks/useForumApi";
 import { useAuth } from "../../auth/context/AuthContext";
 
-// Initial state
 const initialState: ForumState = {
 	posts: [],
 	userPosts: [],
@@ -20,7 +19,6 @@ const initialState: ForumState = {
 	error: null,
 };
 
-// Action types
 type ForumAction =
 	| { type: "FETCH_POSTS_START" }
 	| { type: "FETCH_POSTS_SUCCESS"; payload: ForumPostType[] }
@@ -30,7 +28,10 @@ type ForumAction =
 	| { type: "CREATE_POST_SUCCESS"; payload: ForumPostType }
 	| { type: "UPDATE_POST_SUCCESS"; payload: ForumPostType }
 	| { type: "DELETE_POST_SUCCESS"; payload: string }
-	| { type: "LIKE_POST_SUCCESS"; payload: { postId: string; isLiked: boolean } }
+	| {
+			type: "LIKE_POST_SUCCESS";
+			payload: { postId: string; isLiked: boolean; likesCount: number };
+	  }
 	| { type: "SAVE_POST_SUCCESS"; payload: { postId: string; isSaved: boolean } }
 	// biome-ignore lint/suspicious/noExplicitAny:
 	| { type: "ADD_COMMENT_SUCCESS"; payload: { postId: string; comment: any } }
@@ -108,7 +109,7 @@ function forumReducer(state: ForumState, action: ForumAction): ForumState {
 						? {
 								...post,
 								isLiked: action.payload.isLiked,
-								likes: action.payload.isLiked ? post.likes + 1 : post.likes - 1,
+								likes: action.payload.likesCount,
 						  }
 						: post
 				),
@@ -117,7 +118,7 @@ function forumReducer(state: ForumState, action: ForumAction): ForumState {
 						? {
 								...post,
 								isLiked: action.payload.isLiked,
-								likes: action.payload.isLiked ? post.likes + 1 : post.likes - 1,
+								likes: action.payload.likesCount,
 						  }
 						: post
 				),
@@ -126,7 +127,7 @@ function forumReducer(state: ForumState, action: ForumAction): ForumState {
 						? {
 								...post,
 								isLiked: action.payload.isLiked,
-								likes: action.payload.isLiked ? post.likes + 1 : post.likes - 1,
+								likes: action.payload.likesCount,
 						  }
 						: post
 				),
@@ -135,9 +136,7 @@ function forumReducer(state: ForumState, action: ForumAction): ForumState {
 						? {
 								...state.currentPost,
 								isLiked: action.payload.isLiked,
-								likes: action.payload.isLiked
-									? state.currentPost.likes + 1
-									: state.currentPost.likes - 1,
+								likes: action.payload.likesCount,
 						  }
 						: state.currentPost,
 			};
@@ -305,8 +304,6 @@ interface ForumContextType extends ForumState {
 }
 
 const ForumContext = createContext<ForumContextType | undefined>(undefined);
-
-// Provider component
 interface ForumProviderProps {
 	children: ReactNode;
 }
@@ -314,7 +311,13 @@ interface ForumProviderProps {
 export function ForumProvider({ children }: ForumProviderProps) {
 	const [state, dispatch] = useReducer(forumReducer, initialState);
 	const forumApi = useForumApi();
-	const { user } = useAuth();
+	const { user, token } = useAuth();
+
+	useEffect(() => {
+		if (token) {
+			forumApi.setAuthToken(token);
+		}
+	}, [token, forumApi]);
 
 	useEffect(() => {
 		if (user) {
@@ -322,18 +325,21 @@ export function ForumProvider({ children }: ForumProviderProps) {
 		}
 	}, [user]);
 
-	const loadPosts = async (page = 1, limit = 10) => {
-		dispatch({ type: "FETCH_POSTS_START" });
-		try {
-			const posts = await forumApi.fetchPosts(page, limit);
-			dispatch({ type: "FETCH_POSTS_SUCCESS", payload: posts });
-		} catch (error) {
-			console.error("Failed to load posts:", error);
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to load posts" });
-		}
-	};
+	const loadPosts = useCallback(
+		async (page = 1, limit = 10) => {
+			dispatch({ type: "FETCH_POSTS_START" });
+			try {
+				const posts = await forumApi.fetchPosts(page, limit);
+				dispatch({ type: "FETCH_POSTS_SUCCESS", payload: posts });
+			} catch (error) {
+				console.error("Failed to load posts:", error);
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to load posts" });
+			}
+		},
+		[forumApi]
+	);
 
-	const loadUserPosts = async () => {
+	const loadUserPosts = useCallback(async () => {
 		if (!user) {
 			return;
 		}
@@ -342,218 +348,253 @@ export function ForumProvider({ children }: ForumProviderProps) {
 		try {
 			const posts = await forumApi.fetchUserPosts(user.id);
 			dispatch({ type: "FETCH_USER_POSTS_SUCCESS", payload: posts });
-		} catch {
+		} catch (error) {
+			console.error("Failed to load user posts:", error);
 			dispatch({ type: "FETCH_ERROR", payload: "Failed to load your posts" });
 		}
-	};
+	}, [user, forumApi]);
 
-	const loadSavedPosts = async () => {
+	const loadSavedPosts = useCallback(async () => {
 		dispatch({ type: "FETCH_POSTS_START" });
 		try {
 			const posts = await forumApi.fetchSavedPosts();
 			dispatch({ type: "FETCH_SAVED_POSTS_SUCCESS", payload: posts });
-		} catch {
+		} catch (error) {
+			console.error("Failed to load saved posts:", error);
 			dispatch({ type: "FETCH_ERROR", payload: "Failed to load saved posts" });
 		}
-	};
+	}, [forumApi]);
 
-	const loadPost = async (postId: string) => {
-		dispatch({ type: "FETCH_POSTS_START" });
-		try {
-			const post = await forumApi.fetchPostById(postId);
-			dispatch({ type: "FETCH_POST_SUCCESS", payload: post });
-		} catch {
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to load post" });
-		}
-	};
-
-	const createNewPost = async (
-		title: string,
-		content: string,
-		tags?: string[]
-	) => {
-		dispatch({ type: "FETCH_POSTS_START" });
-		try {
-			const post = await forumApi.createPost(title, content, tags);
-			dispatch({ type: "CREATE_POST_SUCCESS", payload: post });
-		} catch (error) {
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to create post" });
-			throw error;
-		}
-	};
-
-	const updateExistingPost = async (
-		postId: string,
-		data: { title?: string; content?: string; tags?: string[] }
-	) => {
-		dispatch({ type: "FETCH_POSTS_START" });
-		try {
-			const post = await forumApi.updatePost(postId, data);
-			dispatch({ type: "UPDATE_POST_SUCCESS", payload: post });
-		} catch (error) {
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to update post" });
-			throw error;
-		}
-	};
-
-	const deleteExistingPost = async (postId: string) => {
-		dispatch({ type: "FETCH_POSTS_START" });
-		try {
-			await forumApi.deletePost(postId);
-			dispatch({ type: "DELETE_POST_SUCCESS", payload: postId });
-		} catch (error) {
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to delete post" });
-			throw error;
-		}
-	};
-
-	const toggleLike = async (postId: string) => {
-		try {
-			const post =
-				state.posts.find((p) => p._id === postId) ||
-				state.userPosts.find((p) => p._id === postId) ||
-				state.savedPosts.find((p) => p._id === postId) ||
-				state.currentPost;
-
-			if (!post) {
-				return;
-			}
-
-			const isCurrentlyLiked = post.isLiked;
-
-			// Optimistic update
-			dispatch({
-				type: "LIKE_POST_SUCCESS",
-				payload: { postId, isLiked: !isCurrentlyLiked },
-			});
-
-			// Use try-catch to handle errors without causing re-renders
+	const loadPost = useCallback(
+		async (postId: string) => {
+			dispatch({ type: "FETCH_POSTS_START" });
 			try {
-				await forumApi.likePost(postId);
-			} catch {
-				// Revert on error
+				const post = await forumApi.fetchPostById(postId);
+				dispatch({ type: "FETCH_POST_SUCCESS", payload: post });
+			} catch (error) {
+				console.error("Failed to load post:", error);
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to load post" });
+			}
+		},
+		[forumApi]
+	);
+
+	const createNewPost = useCallback(
+		async (title: string, content: string, tags?: string[]) => {
+			dispatch({ type: "FETCH_POSTS_START" });
+			try {
+				const post = await forumApi.createPost(title, content, tags);
+				dispatch({ type: "CREATE_POST_SUCCESS", payload: post });
+			} catch (error) {
+				console.error("Failed to create post:", error);
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to create post" });
+				throw error;
+			}
+		},
+		[forumApi]
+	);
+
+	const updateExistingPost = useCallback(
+		async (
+			postId: string,
+			data: { title?: string; content?: string; tags?: string[] }
+		) => {
+			dispatch({ type: "FETCH_POSTS_START" });
+			try {
+				const post = await forumApi.updatePost(postId, data);
+				dispatch({ type: "UPDATE_POST_SUCCESS", payload: post });
+			} catch (error) {
+				console.error("Failed to update post:", error);
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to update post" });
+				throw error;
+			}
+		},
+		[forumApi]
+	);
+
+	const deleteExistingPost = useCallback(
+		async (postId: string) => {
+			dispatch({ type: "FETCH_POSTS_START" });
+			try {
+				await forumApi.deletePost(postId);
+				dispatch({ type: "DELETE_POST_SUCCESS", payload: postId });
+			} catch (error) {
+				console.error("Failed to delete post:", error);
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to delete post" });
+				throw error;
+			}
+		},
+		[forumApi]
+	);
+
+	const toggleLike = useCallback(
+		async (postId: string) => {
+			try {
+				const post =
+					state.posts.find((p) => p._id === postId) ||
+					state.userPosts.find((p) => p._id === postId) ||
+					state.savedPosts.find((p) => p._id === postId) ||
+					state.currentPost;
+
+				if (!post) {
+					return;
+				}
+
+				const isCurrentlyLiked = post.isLiked;
+
 				dispatch({
 					type: "LIKE_POST_SUCCESS",
-					payload: { postId, isLiked: isCurrentlyLiked },
+					payload: {
+						postId,
+						isLiked: !isCurrentlyLiked,
+						likesCount: isCurrentlyLiked ? post.likes - 1 : post.likes + 1,
+					},
 				});
+
+				await forumApi.likePost(postId);
+
+				dispatch({
+					type: "LIKE_POST_SUCCESS",
+					payload: {
+						postId,
+						isLiked: !isCurrentlyLiked,
+						likesCount: isCurrentlyLiked ? post.likes - 1 : post.likes + 1,
+					},
+				});
+			} catch (error) {
+				console.error("Failed to toggle like:", error);
+
+				const post =
+					state.posts.find((p) => p._id === postId) ||
+					state.userPosts.find((p) => p._id === postId) ||
+					state.savedPosts.find((p) => p._id === postId) ||
+					state.currentPost;
+
+				if (post) {
+					dispatch({
+						type: "LIKE_POST_SUCCESS",
+						payload: {
+							postId,
+							isLiked: post.isLiked,
+							likesCount: post.likes,
+						},
+					});
+				}
 
 				dispatch({ type: "FETCH_ERROR", payload: "Failed to like post" });
 			}
-		} catch (error) {
-			console.error("Error in toggleLike:", error);
-		}
-	};
+		},
+		[
+			state.posts,
+			state.userPosts,
+			state.savedPosts,
+			state.currentPost,
+			forumApi,
+		]
+	);
 
-	const toggleSave = async (postId: string) => {
-		try {
-			const post =
-				state.posts.find((p) => p._id === postId) ||
-				state.userPosts.find((p) => p._id === postId) ||
-				state.savedPosts.find((p) => p._id === postId) ||
-				state.currentPost;
+	const toggleSave = useCallback(
+		async (postId: string) => {
+			try {
+				const post =
+					state.posts.find((p) => p._id === postId) ||
+					state.userPosts.find((p) => p._id === postId) ||
+					state.savedPosts.find((p) => p._id === postId) ||
+					state.currentPost;
 
-			if (!post) {
-				return;
+				if (!post) {
+					return;
+				}
+
+				const isCurrentlySaved = post.isSaved;
+
+				dispatch({
+					type: "SAVE_POST_SUCCESS",
+					payload: { postId, isSaved: !isCurrentlySaved },
+				});
+
+				await forumApi.savePost(postId);
+			} catch (error) {
+				console.error("Failed to toggle save:", error);
+				const post =
+					state.posts.find((p) => p._id === postId) ||
+					state.userPosts.find((p) => p._id === postId) ||
+					state.savedPosts.find((p) => p._id === postId) ||
+					state.currentPost;
+
+				if (post) {
+					dispatch({
+						type: "SAVE_POST_SUCCESS",
+						payload: { postId, isSaved: post.isSaved },
+					});
+				}
+
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to save post" });
 			}
+		},
+		[
+			state.posts,
+			state.userPosts,
+			state.savedPosts,
+			state.currentPost,
+			forumApi,
+		]
+	);
 
-			const isCurrentlySaved = post.isSaved;
+	const postComment = useCallback(
+		async (postId: string, content: string) => {
+			try {
+				const newComment = await forumApi.addComment(postId, content);
 
-			// Optimistic update
-			dispatch({
-				type: "SAVE_POST_SUCCESS",
-				payload: { postId, isSaved: !isCurrentlySaved },
-			});
-
-			await forumApi.savePost(postId);
-		} catch {
-			// Revert on error
-			const post =
-				state.posts.find((p) => p._id === postId) ||
-				state.userPosts.find((p) => p._id === postId) ||
-				state.savedPosts.find((p) => p._id === postId) ||
-				state.currentPost;
-
-			if (!post) {
-				return;
+				dispatch({
+					type: "ADD_COMMENT_SUCCESS",
+					payload: { postId, comment: newComment },
+				});
+			} catch (error) {
+				console.error("Failed to post comment:", error);
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to post comment" });
+				throw error;
 			}
+		},
+		[forumApi]
+	);
 
-			dispatch({
-				type: "SAVE_POST_SUCCESS",
-				payload: { postId, isSaved: post.isSaved },
-			});
+	const postReply = useCallback(
+		async (postId: string, commentId: string, content: string) => {
+			try {
+				const newReply = await forumApi.addReply(postId, commentId, content);
 
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to save post" });
-		}
-	};
+				dispatch({
+					type: "ADD_REPLY_SUCCESS",
+					payload: { postId, commentId, reply: newReply },
+				});
+			} catch (error) {
+				console.error("Failed to post reply:", error);
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to post reply" });
+				throw error;
+			}
+		},
+		[forumApi]
+	);
 
-	const postComment = async (postId: string, content: string) => {
-		try {
-			await forumApi.addComment(postId, content);
-			// In a real app, you'd get the new comment from the API response
-			// For now, we'll simulate it
-			const newComment = {
-				_id: Date.now().toString(),
-				authorId: user?.id || "",
-				authorName: user?.name || "User",
-				authorAvatar: user?.avatar,
-				content,
-				createdAt: new Date().toISOString(),
-				replies: [],
-			};
-
-			dispatch({
-				type: "ADD_COMMENT_SUCCESS",
-				payload: { postId, comment: newComment },
-			});
-		} catch (error) {
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to post comment" });
-			throw error;
-		}
-	};
-
-	const postReply = async (
-		postId: string,
-		commentId: string,
-		content: string
-	) => {
-		try {
-			await forumApi.addReply(postId, commentId, content);
-			// Simulate new reply
-			const newReply = {
-				_id: Date.now().toString(),
-				authorId: user?.id || "",
-				authorName: user?.name || "User",
-				authorAvatar: user?.avatar,
-				content,
-				createdAt: new Date().toISOString(),
-			};
-
-			dispatch({
-				type: "ADD_REPLY_SUCCESS",
-				payload: { postId, commentId, reply: newReply },
-			});
-		} catch (error) {
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to post reply" });
-			throw error;
-		}
-	};
-
-	const searchForPosts = async (query: string): Promise<ForumPostType[]> => {
-		try {
-			return await forumApi.searchPosts(query);
-		} catch (error) {
-			dispatch({ type: "FETCH_ERROR", payload: "Failed to search posts" });
-			throw error;
-		}
-	};
-
-	const memoizedLoadPosts = useCallback(loadPosts, []);
+	const searchForPosts = useCallback(
+		async (query: string): Promise<ForumPostType[]> => {
+			try {
+				return await forumApi.searchPosts(query);
+			} catch (error) {
+				console.error("Failed to search posts:", error);
+				dispatch({ type: "FETCH_ERROR", payload: "Failed to search posts" });
+				throw error;
+			}
+		},
+		[forumApi]
+	);
 
 	return (
 		<ForumContext.Provider
 			value={{
 				...state,
-				loadPosts: memoizedLoadPosts,
+				loadPosts,
 				loadUserPosts,
 				loadSavedPosts,
 				loadPost,
