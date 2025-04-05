@@ -1,7 +1,8 @@
-import { CircleCheck, CircleX, ChevronRight } from "lucide-react";
+import { CircleCheck, ChevronRight } from "lucide-react";
 import Achievements from "../components/Achievements";
 import Sidebar from "../components/Sidebar";
 import ProgressBar from "../components/ProgressBar"; // Assume you have this component
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   {
@@ -53,6 +54,7 @@ const steps = [
 ];
 
 export default function CourseMap() {
+  const navigate = useNavigate();
   const completedSteps = steps.filter((step) => step.completed).length;
   const totalSteps = steps.length;
   const progress = Math.round((completedSteps / totalSteps) * 100);
@@ -61,6 +63,21 @@ export default function CourseMap() {
     (sum, step) => (step.completed ? sum + step.points : sum),
     0
   );
+
+  const handleStepClick = (step) => {
+    if (step.isQuiz) {
+      navigate("/quiz");
+    } else {
+      navigate("/course-content");
+    }
+  };
+
+  const handleFinalQuizClick = () => {
+    const quizStep = steps.find((step) => step.isQuiz);
+    if (quizStep) {
+      navigate("/quiz");
+    }
+  };
 
   return (
     <div className="flex h-screen ">
@@ -92,10 +109,22 @@ export default function CourseMap() {
               </div>
               <ProgressBar value={progress} />
             </div>
+
+            {/* Final Quiz Button - Only shown if all other steps are completed */}
+            {completedSteps === totalSteps - 1 && (
+              <div className="mb-6">
+                <button
+                  onClick={handleFinalQuizClick}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200"
+                >
+                  Take Final Quiz
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Course Steps */}
-          <div className="bg-white  rounded-lg overflow-hidden">
+          <div className="bg-white rounded-lg overflow-hidden">
             <div className="relative px-6 py-5">
               {/* Vertical Line */}
               <div className="absolute left-10 top-0 w-0.5 bg-gray-200 h-full"></div>
@@ -120,7 +149,10 @@ export default function CourseMap() {
                   {/* Step Content */}
                   <div className="ml-6 flex-1">
                     <div className="flex justify-between items-start">
-                      <div>
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => handleStepClick(step)}
+                      >
                         <h3
                           className={`text-lg font-semibold ${
                             step.completed ? "text-green-600" : "text-gray-800"
@@ -141,11 +173,12 @@ export default function CourseMap() {
                           {step.points} pts
                         </span>
                         <button
+                          onClick={() => handleStepClick(step)}
                           className={`p-1 rounded-full ${
                             step.completed
                               ? "text-green-500 bg-green-50"
                               : "text-blue-500 bg-blue-50"
-                          }`}
+                          } hover:bg-blue-100 transition-colors`}
                         >
                           <ChevronRight size={18} />
                         </button>
@@ -154,9 +187,9 @@ export default function CourseMap() {
 
                     {step.isQuiz && (
                       <div className="mt-2">
-                          <span className="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
-                            Final Assessment
-                          </span>
+                        <span className="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+                          Final Assessment
+                        </span>
                       </div>
                     )}
                   </div>

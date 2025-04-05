@@ -8,6 +8,8 @@ import ForumPage from "../pages/ForumPage";
 import CourseMap from "../pages/CourseMap";
 import Setting from "../pages/Setting"
 import Editor from "../pages/Editor";
+import Quiz from "../pages/Quiz";
+import CourseContent from "../pages/CourseContent";
 
 function Layout() {
 	return (
@@ -17,6 +19,8 @@ function Layout() {
 				<Route path="/" element={<HomePage />} />
 				<Route path="courses" element={<CoursePage />} />
 				<Route path="course-map" element={<CourseMap />} />
+				<Route path="course-content" element={<CourseContent />} />
+				<Route path="quiz" element={<Quiz />} />
 				<Route path="badges" element={<BadgePage />} />
 				<Route path="certificates" element={<Certificate />} />
                 <Route path="/setting" element={<Setting />} />
