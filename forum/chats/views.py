@@ -38,7 +38,7 @@ def register(request):
     if request.method == "GET" and not request.user.is_authenticated:
         # Generate a random username and return it as JSON
         random_name = generate_username(1)[0]
-        username = User.objects.all().count()
+        username = User.objects.all().count() if User.objects.all().count() > 0 else "First"
         user = User.objects.create_user(
             username=username, password="password123", first_name=random_name
         )
@@ -54,6 +54,7 @@ def register(request):
 @csrf_exempt
 def login_view(request):
     if request.method == "POST":
+        
         if request.user.is_authenticated:
             return redirect("forum")
         try:
@@ -101,13 +102,17 @@ def forum(request):
 def reply(request, chat_id):
     if request.user.is_authenticated:
         if request.method == "POST":
-            content = request.POST.get("content")
+            try:
+                data = json.loads(request.body) if request.body else {}
+            except json.JSONDecodeError:
+                return JsonResponse({"error": "Invalid JSON format"}, status=400)
+            content = data.get("content")
             chat = Chat.objects.get(id=chat_id)
             reply = Reply.objects.create(user=request.user, chat=chat, content=content)
             reply.save()
             return JsonResponse({"message": "Reply added successfully"}, status=200)
         else:
-            return JsonResponse({"error": "Invalid request method"}, status=400)
+            return JsonResponse({"error": "Invalid request method","method":f"{request.method}"}, status=400)
     else:
         return redirect("register")
 
@@ -127,7 +132,7 @@ def CreateChat(request):
             chat.save()
             return JsonResponse({"message": "Chat created successfully"}, status=200)
         else:
-            return JsonResponse({"error": "Invalid request method"}, status=400)
+             return JsonResponse({"error": "Invalid request method","method":f"{request.method}"}, status=400)
     else:
         return redirect("register")
 

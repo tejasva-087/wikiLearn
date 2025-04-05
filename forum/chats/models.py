@@ -10,7 +10,7 @@ class Chat(models.Model):
     likes = models.ManyToManyField('auth.User', related_name='liked_chats', blank=True)
 
     def __str__(self):
-        return f"{self.user.username}: {self.message[:20]}... ({self.timestamp})"
+        return f"{self.user.username}: {self.content[:20]}... ({self.timestamp})"
     
 class Reply(models.Model):
     chat = models.ForeignKey(Chat, related_name='replies', on_delete=models.CASCADE)
@@ -20,4 +20,4 @@ class Reply(models.Model):
     
 
     def __str__(self):
-        return f"{self.user.username}: {self.message[:20]}... ({self.timestamp})"
+        return f"{self.user.username}: {self.content[:20]}... ({self.timestamp})"
