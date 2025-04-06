@@ -14,7 +14,7 @@ function CourseBox({ title, description, btnLabel, btnLink, className }) {
         <p className="text-primary">{description}</p>
         <Link
           type="white"
-          link={`/courses/${btnLink}`}
+          link={`${btnLink}`}
           className="font-mid flex-center gap--sml"
         >
           {btnLabel}
