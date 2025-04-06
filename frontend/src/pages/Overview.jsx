@@ -21,7 +21,7 @@ function Overview() {
               title="Continue, Fundamental pillars of wikipedia course"
               description="Master the foundational principles that guide Wikipedia. This course explores the Five Pillars, essential for understanding and contributing effectively."
               btnLabel="Get started"
-              btnLink="courses/course-view"
+              btnLink="https://wikimedia.zephyyrr.in/course-map"
               className="width-full"
             />
             <div className="badge-header">

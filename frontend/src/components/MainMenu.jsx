@@ -20,19 +20,19 @@ const options = [
     id: 2,
     icon: <Books className="icon--big" />,
     label: "Courses",
-    link: "/courses",
+    link: "https://wikimedia.zephyyrr.in/courses",
   },
   {
     id: 3,
     icon: <Medal className="icon--big" />,
     label: "Badges",
-    link: "/badges",
+    link: "https://wikimedia.zephyyrr.in/badges",
   },
   {
     id: 4,
     icon: <Certificate className="icon--big" />,
     label: "Certificate",
-    link: "/certificate",
+    link: "https://wikimedia.zephyyrr.in/certificates",
   },
   {
     id: 5,

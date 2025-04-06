@@ -126,6 +126,7 @@ function Sidebar() {
         </NavLink>
         <NavLink
           to="`https://edit-wikilearn.zephyyrr.in/editor"
+          rel="noopener noreferrer"
           className={({ isActive }) =>
             `flex items-center text-xl space-x-3 text-gray-700 p-3 rounded-xl transition ${
               isActive
