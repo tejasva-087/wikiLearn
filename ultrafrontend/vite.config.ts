@@ -18,6 +18,6 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-    allowedHosts: ["https://wikimedia.zephyyrr.in", "*"],
+    allowedHosts: ["wikimedia.zephyyrr.in"],
   },
 });
