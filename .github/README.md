@@ -84,6 +84,9 @@ graph TD
     Backend -.-> DBContainer
 ```
 
+> [!NOTE]
+> While WikiLearn utilizes multiple frontend and backend services, the separation is architectural rather than experiential. Users interact with a seamless, unified application, unaware of the distributed nature of the system. This microservice approach allows our team to develop, deploy, and scale components independently while maintaining a cohesive product experience. Despite the technical complexity behind the scenes, the end result is a fluid, responsive platform that handles increased load gracefully.
+
 ##### *<div align="center"><sub>Frontend</sub></div>*
 
 WikiLearn's frontend combines React with TypeScript for type safety and robust development. We use Sass for custom component styling alongside Tailwind CSS for utility-based rapid development. Redux manages application state, React Router handles navigation between views, and Axios facilitates reliable API communication. This architecture ensures a responsive, maintainable UI that scales with our feature set.
