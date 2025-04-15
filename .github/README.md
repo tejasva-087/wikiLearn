@@ -57,7 +57,6 @@ graph TD
         end
         
         subgraph "Editor Service"
-            NodeExpress2["Node.js + Express"] --> SocketIO["Socket.io (Real-time)"]
             NodeExpress2 --> EditorAPI["Editor API Endpoints"]
             NodeExpress2 --> GeminiAPI["Gemini AI Integration"]
         end
